@@ -24,7 +24,7 @@ inline_block() = [Expr(:meta, :inline)] # same as @inline
 
 function_def(name, args, body) =
     Expr(:function,
-        Expr(:where, Expr(:call, name, args...), :(T <: AbstractFloat)),
+        Expr(:where, Expr(:call, name, args...), :(T <: AF)),
         Expr(:block, body...))
 
 function_def_typed(name, arg_type, args, body) =

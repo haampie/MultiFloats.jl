@@ -12,7 +12,7 @@ using .MultiFloatsCodeGen
 
 ####################################################### DEFINITION OF MULTIFLOAT
 
-struct MultiFloat{T<:AbstractFloat,N} <: AbstractFloat
+struct MultiFloat{T<:Real,N} <: Real
     _limbs::NTuple{N,T}
 end
 
@@ -20,7 +20,7 @@ const Float16x{N} = MultiFloat{Float16,N}
 const Float32x{N} = MultiFloat{Float32,N}
 const Float64x{N} = MultiFloat{Float64,N}
 
-const AF = Core.AbstractFloat
+const AF = Core.Real
 const MF = MultiFloat
 
 const Float64x1 = Float64x{1}
@@ -39,7 +39,7 @@ const Float64x8 = Float64x{8}
 @inline MultiFloat{T,N}(x::T) where {T<:AF,N} =
     MultiFloat{T,N}((x, ntuple(_ -> zero(T), N - 1)...))
 
-@inline MultiFloat{T,N}(x::MultiFloat{T,M}) where {T<:AbstractFloat,M,N} =
+@inline MultiFloat{T,N}(x::MultiFloat{T,M}) where {T<:AF,M,N} =
     MultiFloat{T,N}((
         ntuple(i -> x._limbs[i], min(M, N))...,
         ntuple(_ -> zero(T), max(N - M, 0))...))
@@ -367,18 +367,18 @@ Base.acotd(::MF{T,N}) where {T<:AF,N} = error("acotd(MultiFloat) not yet impleme
 
 ################################################################################
 
-@inline function two_sum(a::T, b::T) where {T<:AF}
+@inline function two_sum(a, b)
     s = a + b
     v = s - a
     s, (a - (s - v)) + (b - v)
 end
 
-@inline function quick_two_sum(a::T, b::T) where {T<:AF}
+@inline function quick_two_sum(a, b)
     s = a + b
     s, b - (s - a)
 end
 
-@inline function two_prod(a::T, b::T) where {T<:AF}
+@inline function two_prod(a, b)
     p = a * b
     p, fma(a, b, -p)
 end
