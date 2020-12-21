@@ -12,7 +12,8 @@ export one_pass_renorm_func, two_pass_renorm_func,
 ######################################################################## IMPORTS
 
 using Base: +, -, *, div, !, (:), ==, !=, <, <=, >, >=, min, max,
-    Vector, isempty, length, push!, deleteat!, reverse!, Dict, haskey, @assert
+    Vector, isempty, length, push!, deleteat!, reverse!, Dict, haskey, @assert,
+    foldl
 
 ###################################################### METAPROGRAMMING UTILITIES
 
@@ -40,7 +41,7 @@ meta_quick_two_sum(s::Symbol, e::Symbol, a::Symbol, b::Symbol) =
     Expr(:(=), meta_tuple(s, e), Expr(:call, :quick_two_sum, a, b))
 
 meta_sum(addends::Vector{Symbol}) =
-    length(addends) == 1 ? addends[1] : Expr(:call, :+, addends...)
+    foldl((x,y) -> Expr(:call, :+, x, y), addends)
 
 meta_sum(result::Symbol, addends::Vector{Symbol}) =
     Expr(:(=), result, meta_sum(addends))
